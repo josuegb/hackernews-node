@@ -1,0 +1,11 @@
+{
+  "name": "hackernews-node",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/josuegb15/hackernews-node.git",
+  "author": "josuegb15 <josuegb15@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "graphql-yoga": "^1.16.7"
+  }
+}
