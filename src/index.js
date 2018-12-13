@@ -1,6 +1,6 @@
 const { GraphQLServer } = require('graphql-yoga');
 
-const links = [
+let links = [
   {
     id: 'link-0',
     url: 'www.howtographql.com',
@@ -8,25 +8,65 @@ const links = [
   },
 ];
 
-const idCount = links.length;
+let idCount = links.length;
 
 //2
 const resolvers = {
   Query: {
     info: () => `This is the API of a Hackernews Clone`,
     feed: () => links,
+    link: (root, args) => links.find(link => link.id === args.id),
   },
 
   Mutation: {
     post: (root, args) => {
       const link = {
-        id: `link-${idCount}`,
+        id: `link-${idCount++}`,
         description: args.description,
         url: args.url,
       };
 
       links.push(link);
       return link;
+    },
+
+    updateLink: (root, args) => {
+      let newLink = null;
+      links = links.map(link => {
+        if (args.id === link.id) {
+          newLink = {
+            ...link,
+            url: args.url ? args.url : link.url,
+            description: args.description ? args.description : link.description,
+          };
+
+          return newLink;
+        }
+        return link;
+      });
+
+      if (!newLink) {
+        throw 'Element not found';
+      } else {
+        return newLink;
+      }
+    },
+
+    deleteLink: (root, args) => {
+      let deletedLink = null;
+      links = links.filter(link => {
+        if (args.id === link.id) {
+          deletedLink = link;
+          return false;
+        }
+        return;
+      });
+
+      if (!deletedLink) {
+        throw 'Element not found';
+      } else {
+        return deletedLink;
+      }
     },
   },
 
