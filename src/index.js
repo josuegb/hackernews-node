@@ -1,38 +1,23 @@
 const { GraphQLServer } = require('graphql-yoga');
-const { Prisma } = require('prisma-binding');
+const { prisma } = require('./generated/prisma-client');
+
+const Query = require('./resolvers/Query');
+const Mutation = require('./resolvers/Mutation');
+const User = require('./resolvers/User');
+const Link = require('./resolvers/Link');
 
 //2
 const resolvers = {
-  Query: {
-    feed: (root, args, context, info) => context.db.query.links({}, info),
-  },
-
-  Mutation: {
-    post: (root, args, context, info) =>
-      context.db.mutation.createLink(
-        {
-          data: {
-            url: args.url,
-            description: args.description,
-          },
-        },
-        info
-      ),
-  },
+  Query,
+  Mutation,
+  User,
+  Link,
 };
 
 //3
 const server = new GraphQLServer({
   typeDefs: './src/schema.graphql',
   resolvers,
-  context: req => ({
-    ...req,
-    db: new Prisma({
-      typeDefs: 'src/generated/prisma.graphql',
-      endpoint: 'https://us1.prisma.sh/josue-granados/database/dev',
-      secret: 'mysecret123',
-      debug: true,
-    }),
-  }),
+  context: request => ({ ...request, prisma }),
 });
 server.start(() => console.log(`Server is runing on http://localhost:4000`));
